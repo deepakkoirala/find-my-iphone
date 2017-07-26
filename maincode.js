@@ -1,5 +1,7 @@
 var request = require("request");
 var util = require("util");
+var FileCookieStore = require('tough-cookie-filestore');
+
 
 var findmyphone = {
 	init: function(callback) {
@@ -14,13 +16,15 @@ var findmyphone = {
 
 		var newLogin = !findmyphone.hasOwnProperty("jar");
 		if (newLogin) {
-			findmyphone.jar = request.jar();
+			findmyphone.jar = request.jar(new FileCookieStore('cookies.json'));;
+			//findmyphone.jar = request.jar();
 		}
 
 		findmyphone.iRequest = request.defaults({
 			jar: findmyphone.jar,
 			headers: {
-				"Origin": "https://www.icloud.com"
+				"Origin": "https://www.icloud.com",
+				"User_Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36"
 			}
 		});
 
@@ -34,7 +38,8 @@ var findmyphone = {
 				if (err) {
 					//session is dead, start new
 					findmyphone.jar = null;
-					findmyphone.jar = request.jar();
+					//findmyphone.jar = request.jar();
+					findmyphone.jar = request.jar(new FileCookieStore('cookies.json'));;
 
 					findmyphone.login(function(err, res, body) {
 						return callback(err, res, body);
